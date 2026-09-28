@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 import uvicorn
 
 from langchain_openai import ChatOpenAI
-from config.Loader_key import load_key
+from config.api_keys import TONGYI_API_KEY, ZHIPU_API_KEY
 from health_graph import build_health_graph
 from langgraph.checkpoint.memory import InMemorySaver
 
@@ -24,19 +24,23 @@ from langgraph.checkpoint.memory import InMemorySaver
 # =========================
 
 OPENAI_API_BASE = "https://api.z.ai/api/paas/v4/"
-OPENAI_CHAT_API_KEY = load_key("zhipu")
+OPENAI_CHAT_API_KEY = ZHIPU_API_KEY
 OPENAI_CHAT_MODEL = "glm-5.1"
 
 ONEAPI_API_BASE = "https://api.z.ai/api/paas/v4/"
-ONEAPI_CHAT_API_KEY = load_key("zhipu")
+ONEAPI_CHAT_API_KEY = ZHIPU_API_KEY
 ONEAPI_CHAT_MODEL = "glm-5.1"
+
+TONGYI_API_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+TONGYI_CHAT_API_KEY = TONGYI_API_KEY
+TONGYI_CHAT_MODEL = "qwen-plus"
 
 OLLAMA_API_BASE = "http://192.168.2.9:11434/v1"
 OLLAMA_CHAT_API_KEY = "NA"
 OLLAMA_CHAT_MODEL = "llama3.1:latest"
 
-PORT = 8012
-MODEL_TYPE = "oneapi"
+PORT = int(os.getenv("AGENTVQA_PORT", "8012"))
+MODEL_TYPE = os.getenv("AGENTVQA_MODEL_TYPE", "tongyi").lower()
 SAVE_PDF = True
 
 model = None
@@ -81,6 +85,17 @@ def create_chat_model(model_type: str) -> ChatOpenAI:
     """
     根据 MODEL_TYPE 初始化不同的大模型。
     """
+
+    if model_type == "tongyi":
+        if not TONGYI_CHAT_API_KEY:
+            raise ValueError("TONGYI_CHAT_API_KEY 未设置。")
+
+        return ChatOpenAI(
+            base_url=TONGYI_API_BASE,
+            api_key=TONGYI_CHAT_API_KEY,
+            model=TONGYI_CHAT_MODEL,
+            temperature=0.7,
+        )
 
     if model_type == "oneapi":
         if not ONEAPI_CHAT_API_KEY:

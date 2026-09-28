@@ -1,6 +1,7 @@
 import requests
 import json
 import logging
+import os
 
 
 # 设置日志模版
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 # 请求的 FastAPI 服务地址
 # 需要先启动 main.py：
 # python -X utf8 main.py
-url = "http://localhost:8012/agentvqa"
+url = os.getenv("AGENTVQA_API_URL", "http://localhost:8012/agentvqa")
 headers = {"Content-Type": "application/json"}
 
 
@@ -147,5 +148,4 @@ else:
         logger.error(f"响应原始内容: {response.text if 'response' in locals() else ''}")
     except Exception as e:
         logger.error(f"发生未知错误: {e}")
-
 

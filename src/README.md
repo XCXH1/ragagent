@@ -24,6 +24,13 @@ Python、FastAPI、Uvicorn、LangGraph、LangChain、ChromaDB、BM25、FPDF。
 项目结果
 项目实现了一个端到端的多智能体健康问答原型：用户输入健康问题后，系统可以自动完成任务路由、档案检索、医学指标计算、报告生成、安全审核、报告修订和 PDF 保存。相比单轮大模型问答，该系统具备更清晰的流程可控性、更强的可解释性和更好的工程扩展性，适合继续扩展到更多医学工具、人工审核、检索质量评估和长期健康档案管理场景。
 
+运行方式
+1. 复制 `config/api_keys.example.py` 为 `config/api_keys.py`，填入有效且有可用额度的 API Key。`api_keys.py` 已被 Git 忽略，不会上传。
+2. 在 `src` 目录执行 `python -X utf8 main.py`。
+3. 另开终端，在 `src` 目录执行 `python -X utf8 apiTest.py`。
+
+可通过环境变量 `AGENTVQA_PORT`、`AGENTVQA_MODEL_TYPE`、`AGENTVQA_EMBEDDING_TYPE`和 `AGENTVQA_API_URL`覆盖默认配置。
+
 
 
 

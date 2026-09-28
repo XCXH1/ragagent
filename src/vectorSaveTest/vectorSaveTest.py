@@ -2,6 +2,7 @@
 # 引入相关库
 import logging
 from openai import OpenAI
+from config.api_keys import ZHIPU_API_KEY
 import chromadb
 import uuid
 import numpy as np
@@ -17,11 +18,11 @@ logger = logging.getLogger(__name__)
 API_TYPE = "openai"  # openai:调用gpt模型；oneapi:调用oneapi方案支持的模型(这里调用通义千问)
 # openai模型相关配置 根据自己的实际情况进行调整
 OPENAI_API_BASE = "https://api.z.ai/api/paas/v4/"
-OPENAI_EMBEDDING_API_KEY = "a2daabd0cb7649b68b78665229316f87.PvgBbACxfkjZ5bhD"
+OPENAI_EMBEDDING_API_KEY = ZHIPU_API_KEY
 OPENAI_EMBEDDING_MODEL = "embedding-2"
 # oneapi相关配置(通义千问为例) 根据自己的实际情况进行调整
 ONEAPI_API_BASE = "https://api.z.ai/api/paas/v4/"
-ONEAPI_EMBEDDING_API_KEY = "a2daabd0cb7649b68b78665229316f87.PvgBbACxfkjZ5bhD"
+ONEAPI_EMBEDDING_API_KEY = ZHIPU_API_KEY
 ONEAPI_EMBEDDING_MODEL = "embedding-2"
 # 设置测试文本类型
 TEXT_LANGUAGE = 'Chinese'  #Chinese 或 English
@@ -175,7 +176,6 @@ if __name__ == "__main__":
     # 2、测试检索
     user_query = "张三九最近的头痛与之前的体检记录是否有关"
     vectorSearch(user_query)
-
 
 
 

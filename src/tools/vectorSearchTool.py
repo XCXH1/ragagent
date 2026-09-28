@@ -8,7 +8,7 @@ from typing import List
 
 from openai import OpenAI
 import chromadb
-from config.Loader_key import load_key
+from config.api_keys import TONGYI_API_KEY, ZHIPU_API_KEY
 import pprint
 
 from tools.retrievalEnhanceTool import (
@@ -47,18 +47,22 @@ HYBRID_ALPHA = 0.7
 # 模型设置相关
 # =========================
 
-# openai: 调用 OpenAI-compatible 的 embedding 接口
-# oneapi: 调用 oneapi 方案支持的 embedding 接口
-API_TYPE = "openai"
+# tongyi: 调用通义千问 OpenAI-compatible embedding 接口
+# openai / oneapi: 保留原有的智谱兼容配置
+API_TYPE = os.getenv("AGENTVQA_EMBEDDING_TYPE", "tongyi").lower()
+
+TONGYI_API_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+TONGYI_EMBEDDING_API_KEY = TONGYI_API_KEY
+TONGYI_EMBEDDING_MODEL = "text-embedding-v3"
 
 # openai模型相关配置 根据自己的实际情况进行调整
 OPENAI_API_BASE = "https://api.z.ai/api/paas/v4/"
-OPENAI_EMBEDDING_API_KEY = load_key("zhipu")
+OPENAI_EMBEDDING_API_KEY = ZHIPU_API_KEY
 OPENAI_EMBEDDING_MODEL = "embedding-2"
 
 # oneapi相关配置 根据自己的实际情况进行调整
 ONEAPI_API_BASE = "https://api.z.ai/api/paas/v4/"
-ONEAPI_EMBEDDING_API_KEY = load_key("zhipu")
+ONEAPI_EMBEDDING_API_KEY = ZHIPU_API_KEY
 ONEAPI_EMBEDDING_MODEL = "embedding-2"
 
 # =========================
@@ -66,7 +70,9 @@ ONEAPI_EMBEDDING_MODEL = "embedding-2"
 # =========================
 
 # 如果你仍然使用原来的绝对路径，可以保留下面这个：
-CHROMADB_DIRECTORY = r"G:\桌面\Agent\Projects\AgentVQA\src\vectorSaveTest\chromaDB"
+CHROMADB_DIRECTORY = str(
+    Path(__file__).resolve().parents[1] / "vectorSaveTest" / "chromaDB"
+)
 
 # 待查询的 ChromaDB 集合名称
 CHROMADB_COLLECTION_NAME = "demo001"
@@ -84,6 +90,7 @@ def get_embeddings(texts: List[str]) -> List[List[float]]:
     """
 
     global API_TYPE
+    global TONGYI_API_BASE, TONGYI_EMBEDDING_API_KEY, TONGYI_EMBEDDING_MODEL
     global ONEAPI_API_BASE, ONEAPI_EMBEDDING_API_KEY, ONEAPI_EMBEDDING_MODEL
     global OPENAI_API_BASE, OPENAI_EMBEDDING_API_KEY, OPENAI_EMBEDDING_MODEL
 
@@ -93,7 +100,12 @@ def get_embeddings(texts: List[str]) -> List[List[float]]:
     if not texts:
         raise ValueError("待向量化文本为空，无法生成 embedding。")
 
-    if API_TYPE == "oneapi":
+    if API_TYPE == "tongyi":
+        api_base = TONGYI_API_BASE
+        api_key = TONGYI_EMBEDDING_API_KEY
+        model_name = TONGYI_EMBEDDING_MODEL
+
+    elif API_TYPE == "oneapi":
         api_base = ONEAPI_API_BASE
         api_key = ONEAPI_EMBEDDING_API_KEY
         model_name = ONEAPI_EMBEDDING_MODEL
